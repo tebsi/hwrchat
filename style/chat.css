@@ -1,0 +1,32 @@
+/*
+    Created on : 03.09.2016, 14:47:51
+    Author : Martin Tebs
+*/ 
+body{} /*Von Settings Kontrolliert*/
+#headline {position: fixed; color: white;height: 14%; top: 0%; left: 0%; background-color: #D92425; width: 100%; margin-bottom: 15px; border-radius: 0px 0px 5px 5px; box-shadow: 1px 1px 1px 1px #AAAAAA} 
+.title {font-size: 42pt;} 
+.menuopener {border: grey 2px solid; border-radius: 5px;background-color: white; margin: 10px;color: black;z-index: 2;min-width : 15%;position: absolute;right: 0px; } 
+.menuopener .name {float:right;}
+.menuopener li {list-style: none;margin: 0px;padding: 5px;z-index:10;position:relative}
+.menuopener #menu li{border-top: solid grey 2px; }
+.menuopener a {color:black; text-decoration: none} 
+.menuopener a:hover {text-decoration: none;}
+
+/*.button {border: solid black 1px; border-radius: 10px;} 
+.textfield {border: none}*/
+
+#messages {position: fixed; top:15%; left: 0%; bottom: 10%; width: 85%; overflow-y: scroll; z-index:-1} 
+#button_up {clear: right; float: right;margin:0px; padding: 0px;right: 0px;} 
+#button_down {position: fixed; right: 15%; bottom: 10%; display: none;} 
+#message_input{position:fixed; bottom: 0%; height: 10%; left: 0%; width: 100%; background-color: green;}
+.message_input {border: none; position: relative; width: 100%; height:100%}
+/*input, option {color: black;}*/
+
+.message { margin: 5px; padding-left: 5px; padding-right: 5px;z-index:2} 
+.own_message{clear: right; float: right;} 
+.new_message {float: left;clear: left;} 
+.originator {font-size: smaller;font-style: italic;} 
+.message_content {word-wrap: break-word; word-break: break-all;} 
+.block {display: block; overflow: auto;margin: 0px; padding: 0px;}
+
+#userlist {position: fixed; top:15%; bottom: 10%;right: 0%; width: 15%; overflow-y: scroll; z-index:-1} 

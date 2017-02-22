@@ -1,0 +1,46 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 09.02.2017, 11:30:01
+    Author     : mtebs
+*/
+
+.popup{
+    position: fixed; width: 40%; height: 60%; top: 15%; left: 30%;
+    background-color: #D92425;
+    color: white; 
+    border-style: groove; border-color: lightsalmon;
+    display: none;
+}
+
+.popup select, input, button{
+    color: black;
+}
+
+.buttons{
+    position: absolute; bottom: 0px;
+    width: 100%; text-align: right;
+    padding-bottom: 10px;
+    margin-left: -10px;
+}
+
+.auswahl{
+    position: absolute; right: 35px;
+}
+
+.auswahlTitel{
+    position: absolute;
+    width: 100%; text-align: left; 
+}
+
+#dropDowns{
+    margin: 20px;
+}
+
+#popuppop{
+    position: fixed; right: 0%;
+    top: 5%;
+}
