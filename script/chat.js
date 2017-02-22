@@ -2,12 +2,12 @@
 var autoscroll = true;                                          // Autoscroll (Standart an, wird deaktiviert wenn manuell gescrollt wird, reaktiviert wenn der nach-unten-button gedrückt wird
 var fromreciever = true;                                        // Wer Scrollt (Reciever / Manuell)
 var firstMessage = 0;                                           // Variable für die Nachricht die abgeholt werdenn soll beim ältere Nachrichten laden
-//var reciever = new Worker("script/reciever.js");                // Reciever starten
+var reciever = new Worker("script/reciever.js");                // Reciever starten
 var notify = false;                                             // Benachrichtigung anzeigen (Hört auf Focus/blur)
 Notification.requestPermission();                               // Notifications erfragen
 readFirstMessages(1);                                           // Und los gehts, bitte die ersten Nachrichten, lieber Herr Server!
 window.setTimeout(terminateFromReciever, 100);                  // Scrollen Auf Manuell setzen
-//reciever.onmessage = function(event){postMessage(event);};      // Nachrichten abfangen und eintragen
+reciever.onmessage = function(event){postMessage(event);};      // Nachrichten abfangen und eintragen
 window.onload = function(){scrollToBottom();};                  // Nach unten scrollen
 
 //Initialisierung abgeschlossen
@@ -15,8 +15,8 @@ window.onload = function(){scrollToBottom();};                  // Nach unten sc
 /*var source = new EventSource("servlet.php");
 source.onmessage = function(event) {
     postMessage(event);
-};
-*/
+};*/
+
 /** body.onFocus / Benachrichtigungen ausschalten
  * 
  */
@@ -75,7 +75,12 @@ function sendMessage(event){
     if (event.keyCode == 13){
         var data = {'message': $('#message').val()};
         $('#message').val("");
-        $.ajax("handler.php?action=sendMessage", data, function(){});        
+        $.ajax({
+            url:"handler.php?action=sendMessage", 
+            data: data,
+            method: 'POST'
+        })
+        .done(function(){});        
     }
 }
 
@@ -85,7 +90,11 @@ function sendMessage(event){
  */
 function loadMoreMessages(room){
     fromOnScroll();
-    $.ajax("handler.php?action=getOlderMessages&room="+room+"&start="+firstMessage, {} , function(returndata){
+    $.ajax({
+        url: "handler.php?action=getOlderMessages&room="+room+"&start="+firstMessage
+    })
+    .done(
+    function(returndata){
         var content = JSON.parse(returndata);
         firstMessage = content[0].id;
         $('#loadMoreMessages').after(parseHTML(content));
@@ -99,7 +108,9 @@ function loadMoreMessages(room){
 function readFirstMessages(room){
     var data = {'room':room};
     $.ajax ({ url: "handler.php?action=getFirstMessages",
-        data: data})
+        data: data,
+        method: 'post'
+        })
         .done(function(returndata){
         var Jmsgs = JSON.parse(returndata);
         firstMessage = Jmsgs[0].id;

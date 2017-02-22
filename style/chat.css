@@ -15,7 +15,7 @@ body{} /*Von Settings Kontrolliert*/
 /*.button {border: solid black 1px; border-radius: 10px;} 
 .textfield {border: none}*/
 
-#messages {position: fixed; top:15%; left: 0%; bottom: 10%; width: 85%; overflow-y: scroll; z-index:-1} 
+#messages {position: fixed; top:15%; left: 0%; bottom: 10%; width: 83%; overflow-y: scroll; z-index:-1;margin-left: 15px;padding-right: 15px;} 
 #button_up {clear: right; float: right;margin:0px; padding: 0px;right: 0px;} 
 #button_down {position: fixed; right: 15%; bottom: 10%; display: none;} 
 #message_input{position:fixed; bottom: 0%; height: 10%; left: 0%; width: 100%; background-color: green;}
