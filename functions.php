@@ -339,8 +339,8 @@ class MessageHandler{
      */
     public function writeMessage($message, $room) {
         if (RoomHandler::isInRoom($this->uid, $room) && $this->uid) {
-            $test_string = str_replace("&#10;", "", trim(filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS)));
-            $message = str_replace("&#10;", "<br>", trim(filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS)));
+            $test_string = str_replace("&#10;", "", filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS));
+            $message = str_replace("&#10;", "<br>", filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS));
             $message = str_replace(" ", "&nbsp;", $message);
             $message = str_replace("\\", "&#92;", $message);
             if ($test_string != ""){
