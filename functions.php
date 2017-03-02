@@ -47,13 +47,16 @@ $sessionhandler = new Session_Handler($dbhandler);
  *
  */
 class Session_Handler {
-    static $LOGIN_URL = "https://webmail.stud.hwr-berlin.de/ajax/login?action=login";
-    static $CONTACTS_URL = "https://webmail.stud.hwr-berlin.de/ajax/contacts?action=getuser";
+    
+    private $LOGIN_URL, $CONTACTS_URL;
     private static $MAX_NA = 8;
     
     private $dbhandler, $loginID;
     
     public function __construct(&$dbhandler) {
+        global $CONFIG;
+        $this->LOGIN_URL = $CONFIG['URLS']['login_url'];
+        $this->CONTACTS_URL = $CONFIG['URLS']['contacts_url'];
         $this->dbhandler = $dbhandler;
         $this->readLoginId();
     }
@@ -64,7 +67,7 @@ class Session_Handler {
      * @return boolean
      */
     public function login($name, $password) {
-        $url = self::$LOGIN_URL;
+        $url = $this->LOGIN_URL;
         $post = "name=" . $name . "&password=" . $password;
         $response = json_decode(self::fireCURL($url, $post)); //Gibt ein Objekt mit session-ID und User-ID zurück
         if (isset($response->session)) {
@@ -86,7 +89,7 @@ class Session_Handler {
      */
     public function readUserName($sid, $uid, $name_alt='Unbekannt') {
         if (isset($uid) && isset($sid)) {
-            $url = self::$CONTACTS_URL;
+            $url = $this->CONTACTS_URL;
             $post = "session=" . $sid . "&id=" . $uid;
             $response = json_decode(self::fireCURL($url, $post)); //gibt ein Objekt mit Display_name zurück
             unlink("cookies/".session_id());
