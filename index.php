@@ -46,26 +46,22 @@
     <body onfocus="setActive();" onblur="setPassive();" style="background-color:<?php echo $settingsArray['background-color'];?>; font-family: <?php echo $settingsArray['font-family'];?>" onload="init();" onbeforeunload="leave();">
         <?php
         if ($name){
-            $sessionhandler->enter(1);
             ?>
             <div id="headline">
                 <span class="title">HWR-Chat</span>
-				<span class="menuopener">
-					<a href='#' onclick="toggleMenu();">
-						<li><img src="img/user-silhouette.svg" height="20px"><span class="name"><?php echo $name;?></span></li></a>
-					<span id="menu">
-						<li><a href="#" data-toggle="modal" data-target="#modalFeedback">Feedback</a></li>
-						<li><a href="#" onclick="showPersonalSettings();">persönliche Einstellungen</a></li>
-						<li><a href="handler.php?action=logout">Logout</a></li>
-					</span>
-				</span>
+                    <span class="menuopener"onclick="toggleMenu();">
+                        <li><img src="img/user-silhouette.svg" height="20px"><span class="name"><?php echo $name;?></span></li>
+                        <span id="menu">
+                            <a href="#" data-toggle="modal" data-target="#modalFeedback"><li>Feedback</li></a>
+                            <a href="#" onclick="showPersonalSettings();"><li>persönliche Einstellungen</li></a>
+                            <a href="handler.php?action=logout"> <li>Logout</li></a>
+                        </span>
+                    </span>
             </div>
             <div id="messages" onscroll="fromOnScroll();" style="color:<?php echo $settingsArray['text-color'];?>">
-                <p class="block" id="loadMoreMessages">
-                    <span id="button_up">
-                        <img src="img/up.png" height="50%" width="50%" onclick="loadMoreMessages(1);">
-                    </span>
-                </p>
+                <span class="block" id="loadMoreMessages">
+                    <span id="button_up"><img src="img/up.png" height="50%" width="50%" onclick="loadMoreMessages(1);"></span>
+                </span>
                 <p class="block">
                     <span id="button_down">
                         <img src="img/down.png" onclick="fromButtonScroll();" height="50%" width="50%">
@@ -80,8 +76,8 @@
                  }
                  ?>
             </div>
-            <div id="message_input">
-                <input name="message" id="message" placeholder="Insert Message here..." onkeypress="sendMessage(event);" class="message_input">
+            <div id="message_input" >
+                <textarea name="message" id="message" placeholder="Nachricht eingeben..."  onkeydown="checkShift(event);" onkeyup="sendMessage(event);"></textarea>
             </div>
             <!-- personal settings -->
             <form id="personal-settings-form">
@@ -162,8 +158,8 @@
                         </div> 
                     </div>
                     <div class="buttons">
-                        <input id="popUpHideAccept" type="button" value="Bestätigen" onclick="savePersonalSettings();"></input>
-                        <input id="pupUpHideCancel" type="button" value="Abbrechen" onclick="window.location='./';"></input>
+                        <input id="popUpHideAccept" type="button" value="Bestätigen" onclick="savePersonalSettings();">
+                        <input id="pupUpHideCancel" type="button" value="Abbrechen" onclick="window.location='./';">
                     </div>
                 </div>
             </form>
@@ -180,19 +176,19 @@
 								<label>Wie gefällt dir der Chat? (5 - gut, 1 - schlecht)</label>
 								<div class="form-group">
 									<label class="radio-inline">
-										<input type="radio" name="chatIsGoodOrBar" value="5"> 5
+										<input type="radio" name="chatIsGoodOrBad" value="5"> 5
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="chatIsGoodOrBar" value="4"> 4
+										<input type="radio" name="chatIsGoodOrBad" value="4"> 4
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="chatIsGoodOrBar" value="3"> 3
+										<input type="radio" name="chatIsGoodOrBad" value="3"> 3
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="chatIsGoodOrBar" value="2"> 2
+										<input type="radio" name="chatIsGoodOrBad" value="2"> 2
 									</label>
 									<label class="radio-inline">
-										<input type="radio" name="chatIsGoodOrBar" value="1"> 1
+										<input type="radio" name="chatIsGoodOrBad" value="1"> 1
 									</label>
 								</div>
 								<label>Hast du alles gefunden?</label>
@@ -291,6 +287,9 @@
                     case 'rec_logout':
                         $message = 'Der Server hat die Verbindung getrennt.';
                         break;
+                    case 'du_nich':
+                        $message = 'DU NICH!';
+                        break;
                 }
             }
             ?>
@@ -299,7 +298,7 @@
         </div>
         <div class="center-block" style="border:1px solid #888;box-shadow:0px 2px 5px #ccc;max-width:750px;padding:20px;background-color:#F8F8FF">
             <form action="handler.php?action=login" method="post">
-                <h3>Bitte gb deine Anmeldedaten ein</h3>
+                <h3>Bitte gib deine Anmeldedaten ein</h3>
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>

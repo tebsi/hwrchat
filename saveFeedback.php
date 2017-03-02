@@ -1,39 +1,37 @@
 <?php
-echo '<pre>'; //print vars
-print_r($_REQUEST);
-echo '</pre>';
 include_once("functions.php");
 // 3 vars
-if (isset($_REQUEST["chatIsGoodOrBar"]))
+$request = filter_input_array(INPUT_POST);
+if (isset($request["chatIsGoodOrBad"]))
 {
-	$chatIsGoodOrBar = $_REQUEST["chatIsGoodOrBar"];
+	$chatIsGoodOrBad = $request["chatIsGoodOrBad"];
 }
 else
 {
-	$chatIsGoodOrBar = 0;
+	$chatIsGoodOrBad = 0;
 }
-if (isset($_REQUEST["foundEverything"]))
+if (isset($request["foundEverything"]))
 {
-	$foundEverything = $_REQUEST["foundEverything"];
+	$foundEverything = $request["foundEverything"];
 }
 else
 {
 	$foundEverything = 0;
 }
-if (isset($_REQUEST["comment"]))
+if (isset($request["comment"]))
 {
-	$comment = $_REQUEST["comment"];
+	$comment = $request["comment"];
 }
 else
 {
 	$comment = '';
 }
-$dbhandler->getConnection()->query("INSERT INTO `feedback` (chatIsGoodOrBar, foundEverything, comment) VALUES ('$chatIsGoodOrBar', '$foundEverything', '$comment');"); // save 3 vars
+$dbhandler->getConnection()->query("INSERT INTO `feedback` (chatIsGoodOrBad, foundEverything, comment) VALUES ('$chatIsGoodOrBad', '$foundEverything', '$comment');"); // save 3 vars
 // for missing
 $i = 0;
-while ($_REQUEST['missing'][$i] != '')
+while ($request['missing'][$i] != '')
 {
-	$tempMissing = $_REQUEST['missing'][$i];
+	$tempMissing = $request['missing'][$i];
 	$dbhandler->getConnection()->query("INSERT INTO `feedbackMissing` (missing) VALUES ('$tempMissing');"); // missing
 	//echo $_REQUEST['missing'][$i]; // save in DB
 	$i++;

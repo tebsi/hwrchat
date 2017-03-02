@@ -4,18 +4,18 @@ var fromreciever = true;                                        // Wer Scrollt (
 var firstMessage = 0;                                           // Variable für die Nachricht die abgeholt werdenn soll beim ältere Nachrichten laden
 var reciever = new Worker("script/reciever.js");                // Reciever starten
 var notify = false;                                             // Benachrichtigung anzeigen (Hört auf Focus/blur)
-Notification.requestPermission();                               // Notifications erfragen
-readFirstMessages(1);                                           // Und los gehts, bitte die ersten Nachrichten, lieber Herr Server!
+var shiftPressed = false;                                         // Hilfsvariable um Senden zu unterbinden und mittels Schift- und Strg-Taste einen Umbruch zu generieren
+if ("Notification" in window){
+    Notification.requestPermission();                           // Notifications erfragen    
+    Notification.onclick= function(){                               //Nach unten scrollen beim Anklicken der neuen nachricht
+        fromButtonScroll();
+    };
+}
 window.setTimeout(terminateFromReciever, 100);                  // Scrollen Auf Manuell setzen
 reciever.onmessage = function(event){postMessage(event);};      // Nachrichten abfangen und eintragen
 window.onload = function(){scrollToBottom();};                  // Nach unten scrollen
 
 //Initialisierung abgeschlossen
-
-/*var source = new EventSource("servlet.php");
-source.onmessage = function(event) {
-    postMessage(event);
-};*/
 
 /** body.onFocus / Benachrichtigungen ausschalten
  * 
@@ -39,6 +39,7 @@ function notifyMe(){
         new Notification('Neue Nachrichten', { 
                body: 'Sie haben neue Nachrichten im HWR-Chatclient!'
         });    
+        setActive();
     }
 }
 
@@ -67,20 +68,35 @@ function terminateFromReciever(){
     fromreciever = false;
 }
 
+function checkShift(event){
+    if (event.keyCode === 16 || event.keyCode === 17){
+        shiftPressed = true;
+    }
+}
+
 /** Nachricht absetzen... Auf Enter
  * 
  * @param {event} event
  */
 function sendMessage(event){
-    if (event.keyCode == 13){
-        var data = {'message': $('#message').val()};
-        $('#message').val("");
-        $.ajax({
-            url:"handler.php?action=sendMessage", 
-            data: data,
-            method: 'POST'
-        })
-        .done(function(){});        
+    if (event.keyCode === 16 || event.keyCode === 17){
+        shiftPressed = false;
+    }
+    if (!shiftPressed){
+        if (event.keyCode === 13){
+            // Der folgende Teil ist notwendig, um ein eingegebenes 'Enter' mitten im Text (oder am Ende des Textes) abzutrennen. (Beim Abschicken das Zeichen vor der Cursorposition wegschneiden)
+            var text = document.getElementById("message").value;
+            var cursorposition = document.getElementById("message").selectionStart;
+            var before = text.substring(0, cursorposition-1);
+            var after = text.substring (cursorposition, text.length);
+            var data = {'message': before+after};
+            $.ajax({
+                url:"handler.php?action=sendMessage", 
+                data: data,
+                method: 'POST'
+            })
+            .done(function(){$('#message').val("");});        
+        }
     }
 }
 
@@ -116,7 +132,7 @@ function readFirstMessages(room){
         firstMessage = Jmsgs[0].id;
         var msgs = parseHTML(Jmsgs);
         document.getElementById("messages").innerHTML += msgs;
-        scrollToBottom();
+        fromButtonScroll();
     });
 }
 
@@ -211,6 +227,7 @@ function toggleMenu(){
 }
 function init(){
     document.getElementById('menu').style.display = "none";
+    readFirstMessages(1); 
 }
 
 function leave(){

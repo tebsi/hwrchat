@@ -1,4 +1,13 @@
 <?php
+/** Diese Datei enthält alle für das Backend unseres Chats relevanten Funktionen!
+ * 
+ * 
+ * Author: MTebs
+ * 
+ * 
+ */
+
+
 session_start();
 
 require_once __DIR__."/config.php";
@@ -42,10 +51,11 @@ class Session_Handler {
     static $CONTACTS_URL = "https://webmail.stud.hwr-berlin.de/ajax/contacts?action=getuser";
     private static $MAX_NA = 8;
     
-    private $dbhandler;
+    private $dbhandler, $loginID;
     
     public function __construct(&$dbhandler) {
         $this->dbhandler = $dbhandler;
+        $this->readLoginId();
     }
     /** Fragt beim OX Server eine Session ID ab, speichert Sie in der Datenbank
      * 
@@ -79,12 +89,12 @@ class Session_Handler {
             $url = self::$CONTACTS_URL;
             $post = "session=" . $sid . "&id=" . $uid;
             $response = json_decode(self::fireCURL($url, $post)); //gibt ein Objekt mit Display_name zurück
+            unlink("cookies/".session_id());
             if (isset($response->data)) {
                 return $response->data->display_name;
             } else {
                 return $name_alt;
             }
-            unlink("cookies/".session_id());
         }else{
             return false;
         }
@@ -102,13 +112,13 @@ class Session_Handler {
      * 
      * @return userID oder False
      */
-    public function getLoginId() {
+    private function readLoginId() {
         if (isset($_SESSION['sessionID'])) {
             $result = $this->dbhandler->getConnection()->query("SELECT fk_user_id FROM login WHERE session_id = '" . $_SESSION['sessionID'] . "';");
             if ($result->num_rows){
                 $field = $result->fetch_object();
                 if (isset($field->fk_user_id)) {
-                    return $field->fk_user_id;
+                    $this->loginID = $field->fk_user_id;
                 } else {
                     self::logout();
                     return false;
@@ -120,6 +130,10 @@ class Session_Handler {
         } else {
             return false;
         }
+    }
+    
+    public function getLoginId(){
+        return $this->loginID;
     }
     
     /** Liest Anzeigenamen des angemeldeten Benutzers aus Datenbank
@@ -154,7 +168,7 @@ class Session_Handler {
         }   
     }
     
-    public function enter($room){
+    public function activity($room){
         $this->leave();
         $uid = $this->getLoginId();
         $this->dbhandler->getConnection()->query("INSERT INTO user_activity (fk_user_id, last_activity, fk_room_id) VALUES('" . $uid . "', " . time() . ", '".$room."') ON DUPLICATE KEY UPDATE last_activity=VALUES(last_activity);");
@@ -166,16 +180,13 @@ class Session_Handler {
         $this->dbhandler->getConnection()->query("DELETE FROM user_activity WHERE fk_user_id = '".$uid."';");
     }
     
-    public function updateActivity(){
-        $uid = $this->getLoginId();
-        $result = $this->dbhandler->getConnection()->query('UPDATE user_activity SET last_activity = "'.time().'" WHERE fk_user_id = "'.$uid.'";');
-        print_r($this->dbhandler->getConnection()->error);
+    public function cleanupActivity(){
+        $this->dbhandler->getConnection()->query('DELETE FROM user_activity WHERE last_activity < '.(time()-self::$MAX_NA).';'); 
     }
     
     public function readUserList($room){
-        $this->enter($room);
+        $this->activity($room);
         $this->cleanupActivity();
-        
         $result = $this->dbhandler->getConnection()->query("SELECT display_name FROM user_activity LEFT JOIN login ON login.fk_user_id = user_activity.fk_user_id WHERE fk_room_id = '".$room."';");
         if ($result->num_rows){
             $list = $result->fetch_all();
@@ -184,11 +195,6 @@ class Session_Handler {
         }else{
             return null;
         }
-    }
-    
-    public function cleanupActivity(){
-        $this->dbhandler->getConnection()->query('DELETE FROM user_activity WHERE last_activity < '.(time()-self::$MAX_NA).';');
-        
     }
     
     public function readUserListUpdate($room){
@@ -333,8 +339,11 @@ class MessageHandler{
      */
     public function writeMessage($message, $room) {
         if (RoomHandler::isInRoom($this->uid, $room) && $this->uid) {
-            if ($message != ""){
-                $message = filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS);
+            $test_string = str_replace("&#10;", "", trim(filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS)));
+            $message = str_replace("&#10;", "<br>", trim(filter_var($message, FILTER_SANITIZE_SPECIAL_CHARS)));
+            $message = str_replace(" ", "&nbsp;", $message);
+            $message = str_replace("\\", "&#92;", $message);
+            if ($test_string != ""){
                 $this->dbconnection->query("INSERT INTO messages (fk_room_id, fk_user_id, message, time) VALUES ('" . $room . "','" . $this->uid . "','" . $message . "','" . time() . "');");
             }
         }

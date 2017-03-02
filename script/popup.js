@@ -37,7 +37,9 @@ function getPersonalSettings(){
     $.post("handler.php?action=getPersonalSettings", "", function(returndata){
         var parsed = JSON.parse(returndata);
         for (var obj in parsed){
-            document.getElementById(obj).value = parsed[obj]; 
+            if (document.getElementById(obj) != null){
+                document.getElementById(obj).value = parsed[obj]; 
+            }
         }
     });
 }

@@ -1,4 +1,5 @@
 <?php
+$start = microtime(true);
 /** 
  * Hier werden alle Nutzeranfragen ausgewertet.
  */
@@ -9,11 +10,15 @@ switch ($action){
     case 'login':
         $name = filter_input(INPUT_POST, "user_name", FILTER_SANITIZE_STRING);
         $password = rawurlencode(utf8_encode($_POST["user_password"]));
-        if ($sessionhandler->login($name, $password)){
-            header("Location: index.php");
-        }else{
-            header("Location: index.php?msg=err_login");
-        }
+       # if ($name == "s_kalkan"){
+        #     header("Location: index.php?msg=du_nich");
+      #  }else{
+            if ($sessionhandler->login($name, $password)){
+                header("Location: index.php");
+            }else{
+                header("Location: index.php?msg=err_login");
+            }
+    #    }
         break;
     case 'logout':
         $sessionhandler->logout();
@@ -56,3 +61,5 @@ switch ($action){
         echo $action."- Nicht definiert. ";
         exit;
 }
+$end = microtime(true);
+#file_put_contents("time".date("j.m.Y", time()).".txt", "Action: ".$action."; Start: ".$start."; End: ".$end."; Duration: ".($end-$start)."\n", FILE_APPEND);

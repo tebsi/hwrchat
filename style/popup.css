@@ -9,11 +9,17 @@ and open the template in the editor.
 */
 
 .popup{
-    position: fixed; width: 40%; height: 60%; top: 15%; left: 30%;
+    position: fixed; width: 40%; height: 60%; top: 15%; left: 30%; min-width: 400px; 
     background-color: #D92425;
     color: white; 
     border-style: groove; border-color: lightsalmon;
     display: none;
+}
+@media screen and (max-width: 749px){
+   .popup {
+       left: 0px;
+       width:100%;
+   } 
 }
 
 .popup select, input, button{
