@@ -172,10 +172,10 @@ class Session_Handler {
     }
     
     public function activity($room){
-        $this->leave();
+        #$this->leave(); Mit dem ON DUPLICATE KEY kann man sich das doch sparen, oder nicht?!
         $uid = $this->getLoginId();
         $this->dbhandler->getConnection()->query("INSERT INTO user_activity (fk_user_id, last_activity, fk_room_id) VALUES('" . $uid . "', " . time() . ", '".$room."') ON DUPLICATE KEY UPDATE last_activity=VALUES(last_activity);");
-        echo $this->dbhandler->getConnection()->error;
+        #echo $this->dbhandler->getConnection()->error;  //DEBUG
     }
     
     public function leave(){
